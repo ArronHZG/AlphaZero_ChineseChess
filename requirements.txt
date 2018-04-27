@@ -1,0 +1,5 @@
+h5py
+tensorflow-gpu
+Keras
+numpy
+pygame
