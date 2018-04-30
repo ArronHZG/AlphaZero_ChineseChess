@@ -7,9 +7,9 @@ import gc
 import sys
 
 import numpy as np
-import code.environment.light.static_env as senv
-from code.config import Config
-from code.environment.light.lookup_tables import ActionLabelsRed, flip_move
+import src.environment.light.static_env as senv
+from src.config import Config
+from src.environment.light.lookup_tables import ActionLabelsRed, flip_move
 from time import time, sleep
 
 

@@ -13,9 +13,9 @@ from keras.layers.merge import Add
 from keras.layers.normalization import BatchNormalization
 from keras.regularizers import l2
 
-from code.agent.api import CChessModelAPI
-from code.config import Config
-from code.environment.light.lookup_tables import ActionLabelsRed, ActionLabelsBlack
+from src.agent.api import CChessModelAPI
+from src.config import Config
+from src.environment.light.lookup_tables import ActionLabelsRed, ActionLabelsBlack
 
 logger = getLogger(__name__)
 

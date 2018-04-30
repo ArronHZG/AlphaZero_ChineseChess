@@ -1,8 +1,8 @@
 import codecs
 
-from code.environment.light.lookup_tables import Winner
-from code.environment.heavy.chessman import Pawn, Cannon, Rook, Knight, Elephant, Mandarin, King
-from code.utils.logger import getLogger
+from src.environment.light.lookup_tables import Winner
+from src.environment.heavy.chessman import Pawn, Cannon, Rook, Knight, Elephant, Mandarin, King
+from src.utils.logger import getLogger
 
 logger = getLogger(__name__)
 

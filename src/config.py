@@ -6,9 +6,9 @@ class Config:
         self.opts = Options()
         self.resource = ResourceConfig()
         if config_type == 'mini':
-            import code.configs.mini as config
+            import src.configs.mini as config
         elif config_type == 'normal':
-            import code.configs.normal as config
+            import src.configs.normal as config
         else:
             raise RuntimeError(f'未知配置:{config_type}')
         self.model = config.ModelConfig()

@@ -8,14 +8,14 @@ from threading import Thread
 from time import sleep
 from datetime import datetime
 
-import code.environment.light.static_env as senv
-from code.environment.heavy.chessman import *
-from code.agent.model import CChessModel
-from code.agent.mcts import CChessPlayer, VisitState
-from code.config import Config
-from code.environment.heavy.env import CChessEnv
-from code.environment.light.lookup_tables import ActionLabelsRed, flip_move
-from code.utils.model_helper import load_best_model_weight
+import src.environment.light.static_env as senv
+from src.environment.heavy.chessman import *
+from src.agent.model import CChessModel
+from src.agent.mcts import CChessPlayer, VisitState
+from src.config import Config
+from src.environment.heavy.env import CChessEnv
+from src.environment.light.lookup_tables import ActionLabelsRed, flip_move
+from src.utils.model_helper import load_best_model_weight
 
 logger = getLogger(__name__)
 main_dir = os.path.split(os.path.abspath(__file__))[0]

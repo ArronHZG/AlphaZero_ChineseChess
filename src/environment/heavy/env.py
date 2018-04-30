@@ -1,9 +1,9 @@
 import numpy as np
 import copy
 
-from code.environment.heavy.chessboard import Chessboard
-from code.environment.light.lookup_tables import Fen_2_Idx, Winner
-from code.environment.light.chessboard import Chessboard as L_Chessboard
+from src.environment.heavy.chessboard import Chessboard
+from src.environment.light.lookup_tables import Fen_2_Idx, Winner
+from src.environment.light.chessboard import Chessboard as L_Chessboard
 
 from logging import getLogger
 

@@ -1,8 +1,8 @@
 import numpy as np
 from logging import getLogger
 
-from code.environment.light.common import move_to_str, mov_dir, state_to_board_dict, replace_dict
-from code.environment.light.lookup_tables import Winner, Fen_2_Idx
+from src.environment.light.common import move_to_str, mov_dir, state_to_board_dict, replace_dict
+from src.environment.light.lookup_tables import Winner, Fen_2_Idx
 
 logger = getLogger(__name__)
 
@@ -371,3 +371,7 @@ def to_uci_move(action):
     x0, x1 = chr(ord('a') + int(action[0])), chr(ord('a') + int(action[2]))
     move = x0 + action[1] + x1 + action[3]
     return move
+
+if __name__ == '__main__':
+    print(state_to_board(INIT_STATE))
+

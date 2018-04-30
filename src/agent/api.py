@@ -4,8 +4,8 @@ import os
 import shutil
 import numpy as np
 
-from code.config import Config
-from code.utils.model_helper import load_best_model_weight, need_to_reload_best_model_weight
+from src.config import Config
+from src.utils.model_helper import load_best_model_weight, need_to_reload_best_model_weight
 from time import time
 from logging import getLogger
 

@@ -7,9 +7,9 @@ if _PATH_ not in sys.path:
     sys.path.append(_PATH_)
 
 
-from code.utils.logger import setup_logger
-from code.config import Config, PlayWithHumanConfig
-from code.human import play
+from src.utils.logger import setup_logger
+from src.config import Config, PlayWithHumanConfig
+from src.human import play
 
 
 def setup_parameters(config):

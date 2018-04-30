@@ -3,7 +3,7 @@ import json
 from glob import glob
 from logging import getLogger
 
-from code.config import ResourceConfig
+from src.config import ResourceConfig
 
 logger = getLogger(__name__)
 

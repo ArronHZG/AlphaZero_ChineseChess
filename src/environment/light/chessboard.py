@@ -1,5 +1,5 @@
-from code.environment.light.common import RED, BLACK, Move, init_fen, mov_dir, move_to_str, replace_dict
-from code.environment.light.lookup_tables import Winner
+from src.environment.light.common import RED, BLACK, Move, init_fen, mov_dir, move_to_str, replace_dict
+from src.environment.light.lookup_tables import Winner
 
 
 class Chessboard:
@@ -16,15 +16,7 @@ class Chessboard:
         else:
             self.parse_init(init)
 
-    def _update(self):
-        # self._fen = None
-        self._legal_moves = None
-        self.steps += 1
-        if self.steps % 2 == 0:
-            self.turn = RED
-        else:
-            self.turn = BLACK
-
+    # init_FEN 初始化棋盘
     def parse_init(self, init):
         pieces = 'rnbakabnrccpppppRNBAKABNRCCPPPPP'
         position = [init[i:i + 2] for i in range(len(init)) if i % 2 == 0]
@@ -55,16 +47,8 @@ class Chessboard:
                 self.board[y][x] = ch
                 x = x + 1
 
+    # 棋盘 转为 FEN ,同时替换字母
     def FENboard(self):
-        def swapcase(a):
-            if a.isalpha():
-                a = replace_dict[a]
-                # print(a)
-                # print(a.lower() if a.isupper() else a.upper())
-                return a.lower() if a.isupper() else a.upper()  #大小写互换
-            return a
-
-        c = 0
         fen = ''
         for i in range(self.height - 1, -1, -1):
             c = 0
@@ -74,7 +58,7 @@ class Chessboard:
                 else:
                     if c > 0:
                         fen = fen + str(c)
-                    fen = fen + swapcase(self.board[i][j])
+                    fen = fen + self.swapcase(self.board[i][j], replace=True)
                     c = 0
             if c > 0:
                 fen = fen + str(c)
@@ -92,27 +76,15 @@ class Chessboard:
         foo = fen.split(' ')
         rows = foo[0].split('/')
 
-        def swapcase(a):
-            if a.isalpha():
-                return a.lower() if a.isupper() else a.upper()
-            return a
-
         def swapall(aa):
-            return "".join([swapcase(a) for a in aa])
+            return "".join([self.swapcase(a) for a in aa])
 
         return "/".join([swapall(reversed(row)) for row in reversed(rows)]) \
                + " " + foo[1] \
                + " " + foo[2] \
                + " " + foo[3] + " " + foo[4] + " " + foo[5]
 
-    @property
-    def is_red_turn(self):
-        return self.turn == RED
-
-    @property
-    def screen(self):
-        return self.board
-
+    # 在当前棋局下，获得合法移动
     def legal_moves(self):
         if self._legal_moves is not None:
             return self._legal_moves
@@ -126,8 +98,6 @@ class Chessboard:
                 if (self.turn == BLACK and ch.islower()):
                     continue
                 if ch in mov_dir:
-                    if (x == 0 and y == 3):
-                        aa = 3
                     for d in mov_dir[ch]:
                         x_ = x + d[0]
                         y_ = y + d[1]
@@ -197,8 +167,8 @@ class Chessboard:
         self._legal_moves = _legal_moves
         return _legal_moves
 
-    def is_legal(self, mov):
-        return mov.uci in self.legal_moves
+    def is_legal(self, mov: Move):
+        return mov.uci in self.legal_moves()
 
     def is_end(self):
         red_k, black_k = [0, 0], [0, 0]
@@ -235,8 +205,20 @@ class Chessboard:
 
     def move_action_str(self, uci):
         mov = Move(uci)
-        self.push(mov)
-        return True
+        if self.is_legal(mov):
+            self.push(mov)
+            return True
+        else:
+            return False
+
+    def _update(self):
+        # self._fen = None
+        self._legal_moves = None
+        self.steps += 1
+        if self.steps % 2 == 0:
+            self.turn = RED
+        else:
+            self.turn = BLACK
 
     def push(self, mov):
         self.board[mov.n[1]][mov.n[0]] = self.board[mov.p[1]][mov.p[0]]
@@ -381,10 +363,20 @@ class Chessboard:
                 row = first_row
         return row, column
 
-    def swapcase(self, a):
+    def swapcase(self, a, replace=False):
         if a.isalpha():
+            if replace:
+                a = replace_dict[a]
             return a.lower() if a.isupper() else a.upper()
         return a
+
+    @property
+    def is_red_turn(self):
+        return self.turn == RED
+
+    @property
+    def screen(self):
+        return self.board
 
 
 if __name__ == '__main__':
