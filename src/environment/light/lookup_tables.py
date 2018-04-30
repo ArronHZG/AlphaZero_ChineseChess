@@ -1,7 +1,7 @@
-# from src.environment.heavy.chessman import Pawn, Cannon, Rook, Knight, Elephant, Mandarin, King
 from enum import Enum, auto
 import numpy as np
 
+# from src.environment.heavy.chessman import Pawn, Cannon, Rook, Knight, Elephant, Mandarin, King
 # Chessman_2_idx = {
 #     Pawn: 0,
 #     Cannon: 1,
