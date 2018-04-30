@@ -1,10 +1,11 @@
 from multiprocessing import connection, Pipe
 from threading import Thread
-
+import os
+import shutil
 import numpy as np
 
 from code.config import Config
-from code.utility.model_helper import load_best_model_weight, need_to_reload_best_model_weight
+from code.utils.model_helper import load_best_model_weight, need_to_reload_best_model_weight
 from time import time
 from logging import getLogger
 
@@ -32,8 +33,6 @@ class CChessModelAPI:
         return you
 
     def predict_batch_worker(self):
-        if self.config.internet.distributed:
-            self.try_reload_model_from_internet()
         last_model_check_time = time()
         while not self.done:
             if last_model_check_time + 600 < time():
@@ -47,12 +46,15 @@ class CChessModelAPI:
                 while pipe.poll():
                     try:
                         tmp = pipe.recv()
-                        data.extend(tmp)
-                        data_len.append(len(tmp))
-                        result_pipes.append(pipe)
                     except EOFError as e:
                         logger.error(f"EOF error: {e}")
                         pipe.close()
+                    else:
+                        data.extend(tmp)
+                        data_len.append(len(tmp))
+                        result_pipes.append(pipe)
+            if not data:
+                continue
             data = np.asarray(data, dtype=np.float32)
             with self.agent_model.graph.as_default():
                 policy_ary, value_ary = self.agent_model.model.predict_on_batch(data)
@@ -67,7 +69,10 @@ class CChessModelAPI:
                     k = 0
                     i += 1
 
-    def try_reload_model(self):
+    def try_reload_model(self, config_file=None):
+        if config_file:
+            config_path = os.path.join(self.config.resource.model_dir, config_file)
+            shutil.copy(config_path, self.config.resource.model_best_config_path)
         try:
             if self.need_reload and need_to_reload_best_model_weight(self.agent_model):
                 with self.agent_model.graph.as_default():

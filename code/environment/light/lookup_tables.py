@@ -2,6 +2,26 @@
 from enum import Enum, auto
 import numpy as np
 
+Chessman_2_idx = {
+    Pawn: 0,
+    Cannon: 1,
+    Rook: 2,
+    Knight: 3,
+    Elephant: 4,
+    Mandarin: 5,
+    King: 6
+}
+
+Idx_2_Chessman = {
+    0: Pawn,
+    1: Cannon,
+    2: Rook,
+    3: Knight,
+    4: Elephant,
+    5: Mandarin,
+    6: King
+}
+
 Fen_2_Idx = {
     'p': 0,
     'P': 0,

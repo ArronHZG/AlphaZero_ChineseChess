@@ -386,6 +386,6 @@ class Chessboard:
         return a
 
 
-if __name__ == '__main__':  # test
+if __name__ == '__main__':
     board = Chessboard()
-    print(str(board.legal_moves))
+    print(board.legal_moves)

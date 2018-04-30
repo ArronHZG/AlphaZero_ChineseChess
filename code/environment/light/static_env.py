@@ -1,6 +1,6 @@
 import numpy as np
 
-from code.environment.light.common import mov_dir, move_to_str, state_to_board_dict, replace_dict
+from code.environment.light.common import *
 from code.environment.light.lookup_tables import Winner, Fen_2_Idx
 from logging import getLogger
 
@@ -11,8 +11,13 @@ INIT_STATE = 'rkemsmekr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RKEMSMEKR'
 BOARD_HEIGHT = 10
 BOARD_WIDTH = 9
 
-
-def done(state):
+def done(state, turns=-1, need_check=False):
+    if 's' not in state:
+        return (True, 1, None)
+    if 'S' not in state:
+        return (True, -1, None)
+    # if turns > 0 and turns < 20:
+    #     return (False, 0, None)
     board = state_to_board(state)
     red_k, black_k = [0, 0], [0, 0]
     winner = None
@@ -43,6 +48,7 @@ def done(state):
             v = 1
             winner = Winner.red
     final_move = None
+    check = False
     if winner is None:
         legal_moves = get_legal_moves(state, board)
         for mov in legal_moves:
@@ -52,8 +58,23 @@ def done(state):
                 v = 1
                 final_move = mov
                 break
-    return (winner is not None, v, final_move)
-
+    if winner is None and need_check:
+        black_state = fliped_state(state)
+        black_moves = get_legal_moves(black_state)
+        # render(black_state)
+        red_k[0] = 9 - red_k[0]
+        red_k[1] = 8 - red_k[1]
+        for mov in black_moves:
+            dest = [int(mov[3]), int(mov[2])]
+            if dest == red_k:
+                check = True
+                # logger.debug(f"Checking move {mov}")
+                break
+        # logger.debug(f"red_k = {red_k}, black_moves = {black_moves}, check = {check}")
+    if need_check:
+        return (winner is not None, v, final_move, check)
+    else:
+        return (winner is not None, v, final_move)
 
 def step(state, action):
     board = state_to_board(state)
@@ -65,8 +86,21 @@ def step(state, action):
     return fliped_state(state)
 
 
+def new_step(state, action):
+    no_eat = True
+    board = state_to_board(state)
+    if board[int(action[1])][int(action[0])] == '.':
+        raise ValueError(f"No chessman in {action}, state = {state}")
+    if board[int(action[3])][int(action[2])] != '.':
+        no_eat = False
+    board[int(action[3])][int(action[2])] = board[int(action[1])][int(action[0])]
+    board[int(action[1])][int(action[0])] = '.'
+    state = board_to_state(board)
+    return fliped_state(state), no_eat
+
+
 def evaluate(state):
-    piece_vals = {'R': 14, 'K': 7, 'E': 3, 'M': 2, 'S': 1, 'C': 5, 'P': 1}  # for RED account
+    piece_vals = {'R': 14, 'K': 7, 'E': 3, 'M': 2, 'S':1, 'C': 5, 'P': 1} # for RED account
     ans = 0.0
     tot = 0
     for c in state:
@@ -156,6 +190,13 @@ def state_to_fen(state, turns):
         return flip_fen(fen)
 
 
+def fen_to_state(fen):
+    foo = fen.split(' ')
+    position = foo[0]
+    state = "".join([replace_dict[s] if s.isalpha() else s for s in position])
+    return state
+
+
 def flip_fen(fen):
     foo = fen.split(' ')
     rows = foo[0].split('/')
@@ -169,10 +210,9 @@ def flip_fen(fen):
         return "".join([swapcase(a) for a in aa])
 
     return "/".join([swapall(reversed(row)) for row in reversed(rows)]) \
-           + " " + ('w' if foo[1] == 'b' else 'b') \
-           + " " + foo[2] \
-           + " " + foo[3] + " " + foo[4] + " " + foo[5]
-
+        + " " + ('w' if foo[1] == 'b' else 'b') \
+        + " " + foo[2] \
+        + " " + foo[3] + " " + foo[4] + " " + foo[5]
 
 def fliped_state(state):
     rows = state.split('/')
@@ -204,34 +244,34 @@ def get_legal_moves(state, board=None):
                         continue
                     elif ch == 'p' and y < 5 and x_ != x:  # for red pawn
                         continue
-                    elif ch == 'n' or ch == 'b':  # for knight and bishop
-                        if board[y + int(d[1] / 2)][x + int(d[0] / 2)] != '.':
+                    elif ch == 'n' or ch == 'b' : # for knight and bishop
+                        if board[y+int(d[1]/2)][x+int(d[0]/2)] != '.':
                             continue
                         elif ch == 'b' and y_ > 4:
                             continue
-                    elif ch == 'k' or ch == 'a':  # for king and advisor
+                    elif ch == 'k' or ch == 'a': # for king and advisor
                         if x_ < 3 or x_ > 5:
                             continue
                         if y_ > 2:
                             continue
                     legal_moves.append(move_to_str(x, y, x_, y_))
-                    if (ch == 'k'):  # for King to King check
+                    if (ch == 'k'): #for King to King check
                         d, u = y_board_from(board, x, y)
                         if (u < BOARD_HEIGHT and board[u][x] == 'K'):
                             legal_moves.append(move_to_str(x, y, x, u))
 
-            elif ch == 'r' or ch == 'c':  # for connon and rook
-                l, r = x_board_from(board, x, y)
-                d, u = y_board_from(board, x, y)
-                for x_ in range(l + 1, x):
+            elif ch == 'r' or ch == 'c': # for connon and rook
+                l,r = x_board_from(board,x,y)
+                d,u = y_board_from(board,x,y)
+                for x_ in range(l+1,x):
                     legal_moves.append(move_to_str(x, y, x_, y))
-                for x_ in range(x + 1, r):
+                for x_ in range(x+1,r):
                     legal_moves.append(move_to_str(x, y, x_, y))
-                for y_ in range(d + 1, y):
+                for y_ in range(d+1,y):
                     legal_moves.append(move_to_str(x, y, x, y_))
-                for y_ in range(y + 1, u):
+                for y_ in range(y+1,u):
                     legal_moves.append(move_to_str(x, y, x, y_))
-                if ch == 'r':  # for rook
+                if ch == 'r': # for rook
                     if can_move(board, l, y):
                         legal_moves.append(move_to_str(x, y, l, y))
                     if can_move(board, r, y):
@@ -240,11 +280,11 @@ def get_legal_moves(state, board=None):
                         legal_moves.append(move_to_str(x, y, x, d))
                     if can_move(board, x, u):
                         legal_moves.append(move_to_str(x, y, x, u))
-                else:  # for connon
-                    l_, _ = x_board_from(board, l, y)
-                    _, r_ = x_board_from(board, r, y)
-                    d_, _ = y_board_from(board, x, d)
-                    _, u_ = y_board_from(board, x, u)
+                else: # for connon
+                    l_, _ = x_board_from(board, l,y)
+                    _, r_ = x_board_from(board, r,y)
+                    d_, _ = y_board_from(board, x,d)
+                    _, u_ = y_board_from(board, x,u)
                     if can_move(board, l_, y):
                         legal_moves.append(move_to_str(x, y, l_, y))
                     if can_move(board, r_, y):
@@ -255,11 +295,10 @@ def get_legal_moves(state, board=None):
                         legal_moves.append(move_to_str(x, y, x, u_))
     return legal_moves
 
-
-def can_move(board, x, y):  # basically check the move
-    if x < 0 or x > BOARD_WIDTH - 1:
+def can_move(board, x, y): # basically check the move
+    if x < 0 or x > BOARD_WIDTH-1:
         return False
-    if y < 0 or y > BOARD_HEIGHT - 1:
+    if y < 0 or y > BOARD_HEIGHT-1:
         return False
     if board[y][x].islower():
         return False
@@ -303,9 +342,9 @@ def render(state):
 
 
 def init(pos):
-    board = [['.' for _ in range(BOARD_WIDTH)] for _ in range(BOARD_HEIGHT)]
+    board = [['.' for col in range(BOARD_WIDTH)] for row in range(BOARD_HEIGHT)]
     pieces = 'rnbakabnrccpppppRNBAKABNRCCPPPPP'
-    position = [pos[i:i + 2] for i in range(len(pos)) if i % 2 == 0]
+    position = [pos[i:i+2] for i in range(len(pos)) if i % 2 == 0]
     for pos, piece in zip(position, pieces):
         if pos != '99':
             x, y = int(pos[0]), 9 - int(pos[1])
@@ -323,3 +362,10 @@ def parse_ucci_move(move):
     x0, x1 = ord(move[0]) - ord('a'), ord(move[2]) - ord('a')
     move = str(x0) + move[1] + str(x1) + move[3]
     return move
+
+
+def to_uci_move(action):
+    x0, x1 = chr(ord('a') + int(action[0])), chr(ord('a') + int(action[2]))
+    move = x0 + action[1] + x1 + action[3]
+    return move
+    

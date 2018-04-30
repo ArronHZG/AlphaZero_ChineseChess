@@ -15,7 +15,7 @@ from keras.regularizers import l2
 
 from code.agent.api import CChessModelAPI
 from code.config import Config
-from code.environment.light.lookup_tables import ActionLabelsRed
+from code.environment.light.lookup_tables import ActionLabelsRed, ActionLabelsBlack
 
 logger = getLogger(__name__)
 
@@ -89,6 +89,8 @@ class CChessModel:
             with open(weight_path, "rb") as f:
                 m.update(f.read())
             return m.hexdigest()
+        return None
+
 
     def load(self, config_path, weight_path):
         if os.path.exists(config_path) and os.path.exists(weight_path):
@@ -121,3 +123,5 @@ class CChessModel:
     def close_pipes(self):
         if self.api is not None:
             self.api.close()
+            self.api = None
+

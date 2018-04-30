@@ -123,6 +123,29 @@ class Chessman():
             return chessman.move(col_num, row_num)
         else:
             return False
+        # if self.in_moving_list(col_num, row_num):
+        #     self.__chessboard.remove_chessman_source(self.__position.x, self.__position.y)
+        #     old_x = self.__position.x
+        #     old_y = self.__position.y
+        #     self.__position.x = col_num
+        #     self.__position.y = row_num
+        #     chessman_old = self.chessboard.remove_chessman_target(col_num, row_num)
+        #     self.chessboard.add_chessman(self, col_num, row_num)
+        #     # is check
+        #     checking = self.chessboard.is_check()
+        #     # restore
+        #     if chessman_old != None:
+        #         self.chessboard.add_chessman(chessman_old, col_num, row_num)
+        #     else:
+        #         self.chessboard.remove_chessman_source(col_num, row_num)
+        #     self.__position.x = old_x
+        #     self.__position.y = old_y
+        #     self.__chessboard.add_chessman(self, self.__position.x, self.__position.y)
+        #     self.clear_moving_list()
+        #     self.calc_moving_list()
+        #     return not checking
+        # else:
+        #     return False
 
     def in_moving_list(self, col_num, row_num):
         for point in self.__moving_list:

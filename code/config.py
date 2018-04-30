@@ -1,11 +1,8 @@
 import os
 
 
-# import getpass  # 获取用户名
-
-
 class Config:
-    def __init(self, config_type='mini'):
+    def __init__(self, config_type='mini'):
         self.opts = Options()
         self.resource = ResourceConfig()
         if config_type == 'mini':
@@ -50,6 +47,14 @@ class ResourceConfig:
         self.play_log_path = os.path.join(self.log_dir, "play.log")
         self.eval_log_path = os.path.join(self.log_dir, "eval.log")
         self.font_path = os.path.join(self.resource_dir, 'font', 'PingFang.ttc')
+        self.image_path = os.path.join(self.resource_dir, 'images')
+
+    def create_directories(self):
+        dirs = [self.project_dir, self.data_dir, self.model_dir, self.play_data_dir, self.log_dir,
+                self.play_record_dir, self.next_generation_model_dir]
+        for d in dirs:
+            if not os.path.exists(d):
+                os.makedirs(d)
 
     @staticmethod
     def _project_dir():
@@ -57,10 +62,32 @@ class ResourceConfig:
         return d(d(os.path.abspath(__file__)))
 
 
+class PlayWithHumanConfig:
+    def __init__(self):
+        self.simulation_num_per_move = 800
+        self.c_puct = 1
+        self.search_threads = 20
+        self.noise_eps = 0
+        self.tau_decay_rate = 0
+        self.dirichlet_alpha = 0.2
+
+    def update_play_config(self, pc):
+        pc.simulation_num_per_move = self.simulation_num_per_move
+        pc.c_puct = self.c_puct
+        pc.noise_eps = self.noise_eps
+        pc.tau_decay_rate = self.tau_decay_rate
+        pc.search_threads = self.search_threads
+        pc.dirichlet_alpha = self.dirichlet_alpha
+
+
 if __name__ == '__main__':
     c = Config()
-    r=Resource()
-    #
+    print(c.__dict__)
+
+    # r = ResourceConfig()
+    # r.create_directories()
+    # c.resource = r
     import json
-    myClassJson = json.dumps(c.__dict__)
+
+    myClassJson = json.dumps(c.resource.__dict__)
     print(myClassJson)
