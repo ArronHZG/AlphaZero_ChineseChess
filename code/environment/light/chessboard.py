@@ -1,9 +1,8 @@
-from code.environment.light.common import RED, BLACK, Move, init_fen, mov_dir, move_to_str
+from code.environment.light.common import RED, BLACK, Move, init_fen, mov_dir, move_to_str, replace_dict
 from code.environment.light.lookup_tables import Winner
 
 
 class Chessboard:
-
     def __init__(self, init=None):
         self.height = 10
         self.width = 9
@@ -13,12 +12,12 @@ class Chessboard:
         self.turn = RED
         self.winner = None
         if init is None or init == '':
-            self.assign_fen(None)
+            self.assign_fen(init_fen)
         else:
             self.parse_init(init)
 
     def _update(self):
-        self._fen = None
+        # self._fen = None
         self._legal_moves = None
         self.steps += 1
         if self.steps % 2 == 0:
@@ -60,7 +59,9 @@ class Chessboard:
         def swapcase(a):
             if a.isalpha():
                 a = replace_dict[a]
-                return a.lower() if a.isupper() else a.upper()
+                # print(a)
+                # print(a.lower() if a.isupper() else a.upper())
+                return a.lower() if a.isupper() else a.upper()  #大小写互换
             return a
 
         c = 0
@@ -275,7 +276,7 @@ class Chessboard:
             u = u + 1
         return d, u
 
-    def result(self, claim_draw=True) -> str:
+    def result(self) -> str:
         rst = '*'
         if ('k' not in self.board[0]) and ('k' not in self.board[1]) and ('k' not in self.board[2]):
             rst = '0-1'
@@ -375,7 +376,7 @@ class Chessboard:
                 if first_row != -1 and second_row != -1:
                     break
             if (piece.islower() and col == '+') or (piece.isupper() and col == '-'):
-                row = second_row
+                row = second_rowChessboard
             else:
                 row = first_row
         return row, column
@@ -388,4 +389,4 @@ class Chessboard:
 
 if __name__ == '__main__':
     board = Chessboard()
-    print(board.legal_moves)
+    print(board.FENboard())

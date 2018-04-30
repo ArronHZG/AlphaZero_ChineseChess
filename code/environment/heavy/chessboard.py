@@ -154,8 +154,8 @@ class Chessboard():
         for chessman in self.__chessmans_hash.values():
             chessman.clear_moving_list()
 
-    def move_chessman(self, chessman, col_num, row_num, 
-                      is_record = False, old_x = 0, old_y = 0):
+    def move_chessman(self, chessman, col_num, row_num,
+                      is_record=False, old_x=0, old_y=0):
         if chessman.is_red == self.__is_red_turn:
             chessman_old = self.remove_chessman_target(col_num, row_num)
             self.add_chessman(chessman, col_num, row_num)
@@ -347,8 +347,8 @@ class Chessboard():
             for j in range(10):
                 chess = self.chessmans[i][j]
                 if chess != None:
-                    if chess.position.x != self.chessmans_hash[chess.name].position.x or\
-                        chess.position.y != self.chessmans_hash[chess.name].position.y:
+                    if chess.position.x != self.chessmans_hash[chess.name].position.x or \
+                            chess.position.y != self.chessmans_hash[chess.name].position.y:
                         print("Error position:", chess.name, chess.position.x, chess.position.y)
 
     def make_record(self, chess, old_x, old_y, x, y):
@@ -383,9 +383,9 @@ class Chessboard():
                 self.record += u'进'
             else:
                 self.record += u'退'
-            if type(chess) == Rook or type(chess) == Pawn or\
-               type(chess) == Cannon or type(chess) == King:
-               self.record += RECORD_NOTES[abs(y - old_y)][self.is_red_turn]
+            if type(chess) == Rook or type(chess) == Pawn or \
+                    type(chess) == Cannon or type(chess) == King:
+                self.record += RECORD_NOTES[abs(y - old_y)][self.is_red_turn]
             else:
                 if not self.is_red_turn:
                     self.record += RECORD_NOTES[x + 1][0]
@@ -397,8 +397,8 @@ class Chessboard():
             chs = self.chessmans[old_x][j]
             if chs != None and chs.is_red == chess.is_red:
                 if type(chs) == type(chess) and chs != chess:
-                    if (chs.position.y > old_y and not chs.is_red) or\
-                       (chs.position.y < old_y and chs.is_red):
+                    if (chs.position.y > old_y and not chs.is_red) or \
+                            (chs.position.y < old_y and chs.is_red):
                         return (True, u'前')
                     else:
                         return (True, u'后')
@@ -461,9 +461,9 @@ class Chessboard():
             return "".join([swapcase(a) for a in aa])
 
         return "/".join([swapall(reversed(row)) for row in reversed(rows)]) \
-            + " " + ('r' if foo[1] == 'b' else 'b') \
-            + " " + foo[2] \
-            + " " + foo[3] + " " + foo[4] + " " + foo[5]
+               + " " + ('r' if foo[1] == 'b' else 'b') \
+               + " " + foo[2] \
+               + " " + foo[3] + " " + foo[4] + " " + foo[5]
 
     def make_single_record(self, old_x, old_y, x, y):
         record = ''
@@ -501,9 +501,9 @@ class Chessboard():
                 record += u'进'
             else:
                 record += u'退'
-            if type(chess) == Rook or type(chess) == Pawn or\
-               type(chess) == Cannon or type(chess) == King:
-               record += RECORD_NOTES[abs(y - old_y)][self.is_red_turn]
+            if type(chess) == Rook or type(chess) == Pawn or \
+                    type(chess) == Cannon or type(chess) == King:
+                record += RECORD_NOTES[abs(y - old_y)][self.is_red_turn]
             else:
                 if not self.is_red_turn:
                     record += RECORD_NOTES[x + 1][0]

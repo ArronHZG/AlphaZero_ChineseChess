@@ -1,4 +1,3 @@
-import enum
 import numpy as np
 import copy
 
@@ -9,6 +8,7 @@ from code.environment.light.chessboard import Chessboard as L_Chessboard
 from logging import getLogger
 
 logger = getLogger(__name__)
+
 
 class CChessEnv:
 
@@ -59,13 +59,13 @@ class CChessEnv:
         foo = fen.split(' ')
         return foo[0]
 
-    def step(self, action: str, check_over = True):
+    def step(self, action: str, check_over=True):
         if check_over and action is None:
             return
 
         if not self.board.move_action_str(action):
-            logger.error("Move Failed, action=%s, is_red_turn=%d, board=\n%s" % (action, 
-                self.red_to_move, self.board.screen))
+            logger.error("Move Failed, action=%s, is_red_turn=%d, board=\n%s" % (action,
+                                                                                 self.red_to_move, self.board.screen))
             moves = self.board.legal_moves()
             logger.error(f"Legal moves: {moves}")
         self.num_halfmoves += 1
@@ -119,4 +119,3 @@ class CChessEnv:
 
     def save_records(self, filename):
         self.board.save_record(filename)
-

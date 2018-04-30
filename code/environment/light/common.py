@@ -1,11 +1,9 @@
-RED, BLACK = 1, 0
-BORDER, SPACE = 15, 56
-LOCAL, OTHER = 0, 1
-NETWORK, AI = 0, 1
+RED, BLACK = 1, 0 #RED字母大写 BLACK字母小写
+# BORDER, SPACE = 15, 56
+# LOCAL, OTHER = 0, 1
+# NETWORK, AI = 0, 1
 KING, ADVISOR, BISHOP, KNIGHT, ROOK, CANNON, PAWN, NONE = 0, 1, 2, 3, 4, 5, 6, -1
-
-AI_SEARCH_DEPTH = 5
-
+# AI_SEARCH_DEPTH = 5
 init_fen = 'rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR r - - 0 1'
 
 replace_dict = {
@@ -57,6 +55,7 @@ mov_dir = {
 bishop_check = [(-1, -1), (1, -1), (-1, 1), (1, 1)]
 knight_check = [(0, -1), (0, -1), (1, 0), (1, 0), (0, 1), (0, 1), (-1, 0), (-1, 0)]
 
+
 def get_kind(fen_ch):
     if fen_ch in ['k', 'K']:
         return KING
@@ -74,6 +73,7 @@ def get_kind(fen_ch):
         return PAWN
     else:
         return NONE
+
 
 def get_char(kind, color):
     if kind is KING:
@@ -93,6 +93,7 @@ def get_char(kind, color):
     else:
         return ''
 
+
 def move_to_str(x, y, x_, y_):
     move_str = ''
     move_str += str(x)
@@ -100,6 +101,7 @@ def move_to_str(x, y, x_, y_):
     move_str += str(x_)
     move_str += str(y_)
     return move_str
+
 
 def str_to_move(move_str):
     move_arr = [0] * 4
@@ -109,13 +111,21 @@ def str_to_move(move_str):
     move_arr[3] = int(move_str[3])
     return move_arr
 
+
 class Move:
-    def __init__(self, uci:str):
+    def __init__(self, uci: str):
         s = str_to_move(uci)
-        self.p = (s[0],s[1])
-        self.n = (s[2],s[3])
+        self.p = (s[0], s[1])
+        self.n = (s[2], s[3])
         self.uci = uci
+
     @staticmethod
     def from_uci(uci):
         return Move(uci)
 
+
+if __name__ == '__main__':
+    m = Move('7778')
+    print(m.p)
+    print(m.n)
+    print(Move.from_uci('0001'))
