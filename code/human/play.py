@@ -192,11 +192,9 @@ class PlayWithHuman:
         no_act = None
         while not self.env.done:
             if ai_move_first == self.env.red_to_move:
-                labels = ActionLabelsRed
-                labels_n = len(ActionLabelsRed)
                 self.ai.search_results = {}
                 state = self.env.get_state()
-                _, _, _, check = senv.done(state)
+                _, _, _, check = senv.done(state,need_check=True)
                 if not check and state in self.history[:-1]:
                     no_act = []
                     for i in range(len(self.history) - 1):
