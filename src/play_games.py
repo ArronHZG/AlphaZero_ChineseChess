@@ -33,6 +33,6 @@ if __name__ == "__main__":
     pwhc.update_play_config(config.play)
     config.opts.bg_style = 'WOOD'
     setup_parameters(config)
-    config.play.simulation_num_per_move = 100
+    config.play.simulation_num_per_move = 10
     play.start(config, True)
     input('按任意键退出...')
