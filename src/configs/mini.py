@@ -2,9 +2,9 @@ class EvaluateConfig:
     def __init__(self):
         self.vram_frac = 1.0
         self.game_num = 1
-        self.simulation_num_per_move = 200 # before 200
+        self.simulation_num_per_move = 200  # before 200
         self.thinking_loop = 1
-        self.c_puct = 1 # lower  = prefer mean action value
+        self.c_puct = 1  # lower  = prefer mean action value
         self.tau_decay_rate = 0
         self.noise_eps = 0.2
         self.max_game_length = 100
@@ -36,7 +36,7 @@ class PlayConfig:
         self.max_processes = 1
         self.search_threads = 10
         self.vram_frac = 1.0
-        self.simulation_num_per_move = 100 # just for debug
+        self.simulation_num_per_move = 100  # just for debug
         self.c_puct = 1.5
         self.noise_eps = 0.25
         self.dirichlet_alpha = 0.2
@@ -49,13 +49,14 @@ class PlayConfig:
         self.resign_threshold = -0.92
         self.min_resign_turn = 20
 
+
 class TrainerConfig:
     def __init__(self):
         self.min_games_to_begin_learn = 1
         self.min_data_size_to_learn = 0
         self.cleaning_processes = 1
         self.vram_frac = 1.0
-        self.batch_size = 20
+        self.batch_size = 2
         self.epoch_to_checkpoint = 1
         self.dataset_size = 100000
         self.start_total_steps = 0
@@ -69,6 +70,8 @@ class TrainerConfig:
             (300000, 0.0001),
         ]
         self.sl_game_step = 10000
+        self.load_step = 6
+
 
 class ModelConfig:
     def __init__(self):

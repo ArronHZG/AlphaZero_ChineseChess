@@ -1,0 +1,109 @@
+2018-05-13 18:34:47,412@src.agent.model DEBUG # model files does not exist at /home/arron/PycharmProjects/AlphaZero_ChineseChess/data/model/model_best_config.json and /home/arron/PycharmProjects/AlphaZero_ChineseChess/data/model/model_best_weight.h5
+2018-05-13 18:35:16,325@src.agent.model DEBUG # loading model from /home/arron/PycharmProjects/AlphaZero_ChineseChess/data/model/model_best_config.json
+2018-05-13 18:35:18,620@src.agent.model DEBUG # loaded model digest = 52dd685afd346cb411c04eea4d808be68f9c688e2c32d9991ddf848817aead76
+2018-05-13 18:35:22,013@src.human.play INFO # check = False, NN value = -0.059
+2018-05-13 18:35:22,013@src.human.play INFO # MCTS results:
+2018-05-13 18:35:22,013@src.human.play INFO # move: 炮8平9-1202, visit count: 1, Q_value: -0.017, Prior: 0.028
+2018-05-13 18:35:22,013@src.human.play INFO # move: 炮2平4-7252, visit count: 1, Q_value: -0.029, Prior: 0.027
+2018-05-13 18:35:22,014@src.human.play INFO # move: 卒9进1-0304, visit count: 1, Q_value: -0.022, Prior: 0.027
+2018-05-13 18:35:22,014@src.human.play INFO # move: 卒7进1-2324, visit count: 1, Q_value: -0.024, Prior: 0.029
+2018-05-13 18:35:22,014@src.human.play INFO # move: 卒5进1-4344, visit count: 1, Q_value: -0.032, Prior: 0.028
+2018-05-13 18:35:26,497@src.human.play INFO # check = False, NN value = -0.020
+2018-05-13 18:35:26,498@src.human.play INFO # MCTS results:
+2018-05-13 18:35:26,498@src.human.play INFO # move: 炮9退1-0201, visit count: 1, Q_value: 0.030, Prior: 0.030
+2018-05-13 18:35:26,498@src.human.play INFO # move: 炮9进4-0206, visit count: 1, Q_value: 0.047, Prior: 0.041
+2018-05-13 18:35:26,498@src.human.play INFO # move: 炮2平7-7222, visit count: 1, Q_value: 0.036, Prior: 0.032
+2018-05-13 18:35:26,498@src.human.play INFO # move: 炮2平1-7282, visit count: 1, Q_value: 0.036, Prior: 0.036
+2018-05-13 18:35:26,498@src.human.play INFO # move: 卒9进1-0304, visit count: 1, Q_value: 0.031, Prior: 0.052
+2018-05-13 18:35:28,396@src.human.play INFO # check = False, NN value = -0.052
+2018-05-13 18:35:28,396@src.human.play INFO # MCTS results:
+2018-05-13 18:35:28,396@src.human.play INFO # move: 马8进9-1002, visit count: 1, Q_value: 0.053, Prior: 0.037
+2018-05-13 18:35:28,397@src.human.play INFO # move: 马8进7-1022, visit count: 1, Q_value: 0.070, Prior: 0.063
+2018-05-13 18:35:28,397@src.human.play INFO # move: 车1进3-8083, visit count: 1, Q_value: 0.078, Prior: 0.047
+2018-05-13 18:35:28,397@src.human.play INFO # move: 炮9平5-0141, visit count: 1, Q_value: 0.062, Prior: 0.055
+2018-05-13 18:35:28,397@src.human.play INFO # move: 炮2平1-7282, visit count: 1, Q_value: -0.106, Prior: 0.037
+2018-05-13 18:35:30,146@src.human.play INFO # check = False, NN value = -0.215
+2018-05-13 18:35:30,146@src.human.play INFO # MCTS results:
+2018-05-13 18:35:30,147@src.human.play INFO # move: 将5进1-4041, visit count: 1, Q_value: 0.013, Prior: 0.072
+2018-05-13 18:35:30,147@src.human.play INFO # move: 马2进3-7062, visit count: 1, Q_value: 0.055, Prior: 0.034
+2018-05-13 18:35:30,147@src.human.play INFO # move: 马2进1-7082, visit count: 1, Q_value: -0.032, Prior: 0.033
+2018-05-13 18:35:30,147@src.human.play INFO # move: 车1进2-8082, visit count: 1, Q_value: -0.042, Prior: 0.082
+2018-05-13 18:35:30,147@src.human.play INFO # move: 炮2平6-7232, visit count: 1, Q_value: -0.092, Prior: 0.032
+2018-05-13 18:35:31,855@src.human.play INFO # check = False, NN value = -0.121
+2018-05-13 18:35:31,861@src.human.play INFO # MCTS results:
+2018-05-13 18:35:31,861@src.human.play INFO # move: 马2进3-7062, visit count: 1, Q_value: 0.037, Prior: 0.026
+2018-05-13 18:35:31,861@src.human.play INFO # move: 车1进2-8082, visit count: 1, Q_value: -0.062, Prior: 0.034
+2018-05-13 18:35:31,861@src.human.play INFO # move: 炮9进2-0103, visit count: 1, Q_value: 0.021, Prior: 0.195
+2018-05-13 18:35:31,861@src.human.play INFO # move: 将5进1-4142, visit count: 1, Q_value: -0.117, Prior: 0.082
+2018-05-13 18:35:31,862@src.human.play INFO # move: 炮2平7-7222, visit count: 1, Q_value: -0.051, Prior: 0.021
+2018-05-13 18:35:34,361@src.human.play INFO # check = False, NN value = -0.064
+2018-05-13 18:35:34,361@src.human.play INFO # MCTS results:
+2018-05-13 18:35:34,362@src.human.play INFO # move: 车9进1-0001, visit count: 1, Q_value: -0.026, Prior: 0.654
+2018-05-13 18:35:34,362@src.human.play INFO # move: 车1进2-8082, visit count: 1, Q_value: -0.088, Prior: 0.025
+2018-05-13 18:35:34,362@src.human.play INFO # move: 将5平4-4151, visit count: 1, Q_value: -0.071, Prior: 0.012
+2018-05-13 18:35:34,362@src.human.play INFO # move: 将5退1-4140, visit count: 1, Q_value: 0.004, Prior: 0.140
+2018-05-13 18:35:34,362@src.human.play INFO # move: 马3进5-6243, visit count: 1, Q_value: -0.046, Prior: 0.010
+2018-05-13 18:35:38,195@src.human.play INFO # check = False, NN value = -0.039
+2018-05-13 18:35:38,196@src.human.play INFO # MCTS results:
+2018-05-13 18:35:38,196@src.human.play INFO # move: 车1进2-8082, visit count: 1, Q_value: -0.020, Prior: 0.000
+2018-05-13 18:35:38,196@src.human.play INFO # move: 车9平6-0131, visit count: 1, Q_value: 0.014, Prior: 0.000
+2018-05-13 18:35:38,196@src.human.play INFO # move: 将5平4-4151, visit count: 1, Q_value: -0.026, Prior: 0.000
+2018-05-13 18:35:38,196@src.human.play INFO # move: 将5退1-4140, visit count: 1, Q_value: -0.034, Prior: 0.995
+2018-05-13 18:35:38,196@src.human.play INFO # move: 将5进1-4142, visit count: 1, Q_value: -0.174, Prior: 0.000
+2018-05-13 18:35:40,347@src.human.play INFO # check = False, NN value = 0.058
+2018-05-13 18:35:40,347@src.human.play INFO # MCTS results:
+2018-05-13 18:35:40,348@src.human.play INFO # move: 车9平8-0111, visit count: 1, Q_value: 0.079, Prior: 0.000
+2018-05-13 18:35:40,348@src.human.play INFO # move: 车9平7-0121, visit count: 1, Q_value: 0.162, Prior: 0.000
+2018-05-13 18:35:40,348@src.human.play INFO # move: 车9平6-0131, visit count: 1, Q_value: 0.138, Prior: 0.000
+2018-05-13 18:35:40,348@src.human.play INFO # move: 将5退1-4140, visit count: 1, Q_value: 0.110, Prior: 0.003
+2018-05-13 18:35:40,348@src.human.play INFO # move: 马9退7-0221, visit count: 1, Q_value: 0.060, Prior: 0.000
+2018-05-13 18:35:50,599@src.human.play INFO # check = False, NN value = 0.032
+2018-05-13 18:35:50,603@src.human.play INFO # MCTS results:
+2018-05-13 18:35:50,603@src.human.play INFO # move: 车8平7-1121, visit count: 1, Q_value: 0.107, Prior: 0.000
+2018-05-13 18:35:50,603@src.human.play INFO # move: 车8平6-1131, visit count: 1, Q_value: 0.094, Prior: 0.000
+2018-05-13 18:35:50,603@src.human.play INFO # move: 车8进1-1112, visit count: 1, Q_value: 0.031, Prior: 0.000
+2018-05-13 18:35:50,605@src.human.play INFO # move: 车8进2-1113, visit count: 1, Q_value: 0.065, Prior: 0.000
+2018-05-13 18:35:50,606@src.human.play INFO # move: 车8进7-1118, visit count: 1, Q_value: 0.018, Prior: 0.000
+2018-05-13 18:35:52,421@src.human.play INFO # check = False, NN value = 0.147
+2018-05-13 18:35:52,422@src.human.play INFO # MCTS results:
+2018-05-13 18:35:52,422@src.human.play INFO # move: 车7平9-2101, visit count: 1, Q_value: 0.055, Prior: 0.000
+2018-05-13 18:35:52,422@src.human.play INFO # move: 车7平8-2111, visit count: 1, Q_value: 0.090, Prior: 0.000
+2018-05-13 18:35:52,422@src.human.play INFO # move: 车7进1-2122, visit count: 1, Q_value: 0.158, Prior: 0.000
+2018-05-13 18:35:52,422@src.human.play INFO # move: 车7进2-2123, visit count: 1, Q_value: 0.206, Prior: 0.356
+2018-05-13 18:35:52,422@src.human.play INFO # move: 将5退1-4140, visit count: 1, Q_value: 0.218, Prior: 0.002
+2018-05-13 18:35:54,225@src.human.play INFO # check = False, NN value = 0.146
+2018-05-13 18:35:54,226@src.human.play INFO # MCTS results:
+2018-05-13 18:35:54,226@src.human.play INFO # move: 车9平7-0121, visit count: 1, Q_value: -0.007, Prior: 0.000
+2018-05-13 18:35:54,226@src.human.play INFO # move: 车9平6-0131, visit count: 1, Q_value: -0.077, Prior: 0.001
+2018-05-13 18:35:54,226@src.human.play INFO # move: 将5退1-4140, visit count: 1, Q_value: -0.021, Prior: 0.001
+2018-05-13 18:35:54,227@src.human.play INFO # move: 马9进7-0223, visit count: 1, Q_value: 0.054, Prior: 0.086
+2018-05-13 18:35:54,227@src.human.play INFO # move: 车1平2-8272, visit count: 1, Q_value: 0.196, Prior: 0.909
+2018-05-13 18:35:55,948@src.human.play INFO # check = False, NN value = 0.163
+2018-05-13 18:35:55,955@src.human.play INFO # MCTS results:
+2018-05-13 18:35:55,955@src.human.play INFO # move: 车7平9-2101, visit count: 1, Q_value: -0.349, Prior: 0.000
+2018-05-13 18:35:55,955@src.human.play INFO # move: 车7进2-2123, visit count: 1, Q_value: -0.229, Prior: 0.001
+2018-05-13 18:35:55,956@src.human.play INFO # move: 马9进7-0223, visit count: 1, Q_value: -0.265, Prior: 0.003
+2018-05-13 18:35:55,956@src.human.play INFO # move: 车1平3-8262, visit count: 1, Q_value: 0.287, Prior: 0.995
+2018-05-13 18:35:55,956@src.human.play INFO # move: 车1平2-8272, visit count: 1, Q_value: -0.253, Prior: 0.000
+2018-05-13 18:35:57,772@src.human.play INFO # check = False, NN value = -0.339
+2018-05-13 18:35:57,773@src.human.play INFO # MCTS results:
+2018-05-13 18:35:57,773@src.human.play INFO # move: 车9平7-0121, visit count: 1, Q_value: -0.507, Prior: 0.000
+2018-05-13 18:35:57,773@src.human.play INFO # move: 车9平6-0131, visit count: 1, Q_value: -0.549, Prior: 0.000
+2018-05-13 18:35:57,773@src.human.play INFO # move: 将5平4-4151, visit count: 1, Q_value: -0.596, Prior: 0.000
+2018-05-13 18:35:57,773@src.human.play INFO # move: 将5退1-4140, visit count: 1, Q_value: -0.469, Prior: 0.000
+2018-05-13 18:35:57,773@src.human.play INFO # move: 马9进8-0214, visit count: 1, Q_value: -0.591, Prior: 0.000
+2018-05-13 18:35:59,808@src.human.play INFO # check = False, NN value = -0.609
+2018-05-13 18:35:59,808@src.human.play INFO # MCTS results:
+2018-05-13 18:35:59,808@src.human.play INFO # move: 车7平9-2101, visit count: 1, Q_value: -0.940, Prior: 0.000
+2018-05-13 18:35:59,809@src.human.play INFO # move: 车7平8-2111, visit count: 1, Q_value: -0.813, Prior: 0.000
+2018-05-13 18:35:59,809@src.human.play INFO # move: 车7进2-2123, visit count: 1, Q_value: -0.766, Prior: 0.972
+2018-05-13 18:35:59,809@src.human.play INFO # move: 将5平4-4151, visit count: 1, Q_value: -0.742, Prior: 0.000
+2018-05-13 18:35:59,809@src.human.play INFO # move: 将5退1-4140, visit count: 1, Q_value: -0.717, Prior: 0.000
+2018-05-13 18:36:02,826@src.human.play INFO # check = True, NN value = -0.645
+2018-05-13 18:36:02,827@src.human.play INFO # MCTS results:
+2018-05-13 18:36:02,827@src.human.play INFO # move: 车9平7-0121, visit count: 1, Q_value: -1.000, Prior: 0.000
+2018-05-13 18:36:02,827@src.human.play INFO # move: 将5平6-4131, visit count: 1, Q_value: -0.802, Prior: 0.000
+2018-05-13 18:36:02,827@src.human.play INFO # move: 将5平4-4151, visit count: 1, Q_value: -0.732, Prior: 0.001
+2018-05-13 18:36:02,827@src.human.play INFO # move: 将5退1-4140, visit count: 1, Q_value: -1.000, Prior: 0.000
+2018-05-13 18:36:02,827@src.human.play INFO # move: 将5进1-4142, visit count: 1, Q_value: -0.592, Prior: 0.886
+2018-05-13 18:36:02,959@src.human.play INFO # Winner is Winner.red !!!

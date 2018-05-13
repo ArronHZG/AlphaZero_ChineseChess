@@ -15,7 +15,7 @@ from keras.regularizers import l2
 
 from src.agent.api import CChessModelAPI
 from src.config import Config
-from src.environment.light.lookup_tables import ActionLabelsRed, ActionLabelsBlack
+from src.environment.light.lookup_tables import ActionLabelsRed
 
 logger = getLogger(__name__)
 
@@ -31,7 +31,7 @@ class CChessModel:
 
     def build(self):
         mc = self.config.model
-        in_x = x = Input((14, 10, 9)) # 14 x 10 x 9
+        in_x = x = Input((28, 10, 9)) # (2 x 14) x 10 x 9
 
         # (batch, channels, height, width)
         x = Conv2D(filters=mc.cnn_filter_num, kernel_size=mc.cnn_first_filter_size, padding="same",
@@ -46,7 +46,7 @@ class CChessModel:
         res_out = x
 
         # for policy output
-        x = Conv2D(filters=2, kernel_size=1, data_format="channels_first", use_bias=False,
+        x = Conv2D(filters=32, kernel_size=1, data_format="channels_first", use_bias=False, 
                     kernel_regularizer=l2(mc.l2_reg), name="policy_conv-1-2")(res_out)
         x = BatchNormalization(axis=1, name="policy_batchnorm")(x)
         x = Activation("relu", name="policy_relu")(x)
@@ -54,7 +54,7 @@ class CChessModel:
         policy_out = Dense(self.n_labels, kernel_regularizer=l2(mc.l2_reg), activation="softmax", name="policy_out")(x)
 
         # for value output
-        x = Conv2D(filters=4, kernel_size=1, data_format="channels_first", use_bias=False,
+        x = Conv2D(filters=4, kernel_size=1, data_format="channels_first", use_bias=False, 
                     kernel_regularizer=l2(mc.l2_reg), name="value_conv-1-4")(res_out)
         x = BatchNormalization(axis=1, name="value_batchnorm")(x)
         x = Activation("relu",name="value_relu")(x)
@@ -70,12 +70,12 @@ class CChessModel:
         in_x = x
         res_name = "res" + str(index)
         x = Conv2D(filters=mc.cnn_filter_num, kernel_size=mc.cnn_filter_size, padding="same",
-                   data_format="channels_first", use_bias=False, kernel_regularizer=l2(mc.l2_reg),
+                   data_format="channels_first", use_bias=False, kernel_regularizer=l2(mc.l2_reg), 
                    name=res_name+"_conv1-"+str(mc.cnn_filter_size)+"-"+str(mc.cnn_filter_num))(x)
         x = BatchNormalization(axis=1, name=res_name+"_batchnorm1")(x)
         x = Activation("relu",name=res_name+"_relu1")(x)
         x = Conv2D(filters=mc.cnn_filter_num, kernel_size=mc.cnn_filter_size, padding="same",
-                   data_format="channels_first", use_bias=False, kernel_regularizer=l2(mc.l2_reg),
+                   data_format="channels_first", use_bias=False, kernel_regularizer=l2(mc.l2_reg), 
                    name=res_name+"_conv2-"+str(mc.cnn_filter_size)+"-"+str(mc.cnn_filter_num))(x)
         x = BatchNormalization(axis=1, name="res"+str(index)+"_batchnorm2")(x)
         x = Add(name=res_name+"_add")([in_x, x])
@@ -117,7 +117,7 @@ class CChessModel:
     def get_pipes(self, num=1, api=None, need_reload=True):
         if self.api is None:
             self.api = CChessModelAPI(self.config, self)
-            self.api.start()
+            self.api.start(need_reload)
         return self.api.get_pipe(need_reload)
 
     def close_pipes(self):

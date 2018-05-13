@@ -1,8 +1,9 @@
 from multiprocessing import connection, Pipe
 from threading import Thread
+
 import os
-import shutil
 import numpy as np
+import shutil
 
 from src.config import Config
 from src.utils.model_helper import load_best_model_weight, need_to_reload_best_model_weight
@@ -21,7 +22,8 @@ class CChessModelAPI:
         self.need_reload = True
         self.done = False
 
-    def start(self):
+    def start(self, need_reload=True):
+        self.need_reload = need_reload
         prediction_worker = Thread(target=self.predict_batch_worker, name="prediction_worker")
         prediction_worker.daemon = True
         prediction_worker.start()
@@ -35,7 +37,7 @@ class CChessModelAPI:
     def predict_batch_worker(self):
         last_model_check_time = time()
         while not self.done:
-            if last_model_check_time + 600 < time():
+            if last_model_check_time + 600 < time() and self.need_reload:
                 self.try_reload_model()
                 last_model_check_time = time()
             ready = connection.wait(self.pipes, timeout=0.001)
@@ -78,7 +80,7 @@ class CChessModelAPI:
                 with self.agent_model.graph.as_default():
                     load_best_model_weight(self.agent_model)
         except Exception as e:
-            logger.error(e)
+            self.error = logger.error(e)
 
     def close(self):
         self.done = True

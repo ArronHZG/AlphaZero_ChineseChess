@@ -1,6 +1,5 @@
 import os
 
-
 class Config:
     def __init__(self, config_type='mini'):
         self.opts = Options()
@@ -9,6 +8,8 @@ class Config:
             import src.configs.mini as config
         elif config_type == 'normal':
             import src.configs.normal as config
+        elif config_type == 'distribute':
+            import src.configs.distribute as config
         else:
             raise RuntimeError(f'未知配置:{config_type}')
         self.model = config.ModelConfig()
@@ -16,14 +17,6 @@ class Config:
         self.play_data = config.PlayDataConfig()
         self.trainer = config.TrainerConfig()
         self.eval = config.EvaluateConfig()
-
-
-class Options:
-    new = False
-    light = True
-    device_list = '0,1'
-    bg_style = 'WOOD'
-    piece_style = 'WOOD'
 
 
 class ResourceConfig:
@@ -60,6 +53,20 @@ class ResourceConfig:
     def _project_dir():
         d = os.path.dirname
         return d(d(os.path.abspath(__file__)))
+
+
+class Options:
+    new = False
+    light = True
+    device_list = '0'
+    bg_style = 'CANVAS'
+    piece_style = 'WOOD'
+    random = 'none'
+    log_move = False
+    use_multiple_gpus = False
+    gpu_num = 1
+    evaluate = False
+    has_history = True
 
 
 class PlayWithHumanConfig:

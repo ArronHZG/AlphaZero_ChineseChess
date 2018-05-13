@@ -3,6 +3,7 @@ from src.environment.light.lookup_tables import Winner
 
 
 class Chessboard:
+
     def __init__(self, init=None):
         self.height = 10
         self.width = 9
@@ -12,14 +13,22 @@ class Chessboard:
         self.turn = RED
         self.winner = None
         if init is None or init == '':
-            self.assign_fen(init_fen)
+            self.assign_fen(None)
         else:
             self.parse_init(init)
 
-    # init_FEN 初始化棋盘
+    def _update(self):
+        self._fen = None
+        self._legal_moves = None
+        self.steps += 1
+        if self.steps % 2 == 0:
+            self.turn = RED
+        else:
+            self.turn = BLACK
+
     def parse_init(self, init):
         pieces = 'rnbakabnrccpppppRNBAKABNRCCPPPPP'
-        position = [init[i:i + 2] for i in range(len(init)) if i % 2 == 0]
+        position = [init[i:i+2] for i in range(len(init)) if i % 2 == 0]
         for pos, piece in zip(position, pieces):
             if pos != '99':
                 x, y = int(pos[0]), 9 - int(pos[1])
@@ -33,7 +42,7 @@ class Chessboard:
         for k in range(0, len(fen)):
             ch = fen[k]
             if ch == ' ':
-                if (fen[k + 1] == 'b'):
+                if (fen[k+1] == 'b'):
                     self.turn = BLACK
                 break
             if ch == '/':
@@ -47,8 +56,14 @@ class Chessboard:
                 self.board[y][x] = ch
                 x = x + 1
 
-    # 棋盘 转为 FEN ,同时替换字母
     def FENboard(self):
+        def swapcase(a):
+            if a.isalpha():
+                a = replace_dict[a]
+                return a.lower() if a.isupper() else a.upper()
+            return a
+
+        c = 0
         fen = ''
         for i in range(self.height - 1, -1, -1):
             c = 0
@@ -58,7 +73,7 @@ class Chessboard:
                 else:
                     if c > 0:
                         fen = fen + str(c)
-                    fen = fen + self.swapcase(self.board[i][j], replace=True)
+                    fen = fen + swapcase(self.board[i][j])
                     c = 0
             if c > 0:
                 fen = fen + str(c)
@@ -75,16 +90,26 @@ class Chessboard:
         fen = self.FENboard()
         foo = fen.split(' ')
         rows = foo[0].split('/')
-
+        def swapcase(a):
+            if a.isalpha():
+                return a.lower() if a.isupper() else a.upper()
+            return a
         def swapall(aa):
-            return "".join([self.swapcase(a) for a in aa])
+            return "".join([swapcase(a) for a in aa])
 
         return "/".join([swapall(reversed(row)) for row in reversed(rows)]) \
-               + " " + foo[1] \
-               + " " + foo[2] \
-               + " " + foo[3] + " " + foo[4] + " " + foo[5]
+            + " " + foo[1] \
+            + " " + foo[2] \
+            + " " + foo[3] + " " + foo[4] + " " + foo[5]
 
-    # 在当前棋局下，获得合法移动
+    @property
+    def is_red_turn(self):
+        return self.turn == RED
+
+    @property
+    def screen(self):
+        return self.board
+
     def legal_moves(self):
         if self._legal_moves is not None:
             return self._legal_moves
@@ -98,6 +123,8 @@ class Chessboard:
                 if (self.turn == BLACK and ch.islower()):
                     continue
                 if ch in mov_dir:
+                    if (x == 0 and y == 3):
+                        aa = 3
                     for d in mov_dir[ch]:
                         x_ = x + d[0]
                         y_ = y + d[1]
@@ -107,14 +134,14 @@ class Chessboard:
                             continue
                         elif ch == 'P' and y > 4 and x_ != x:  # for black pawn
                             continue
-                        elif ch == 'n' or ch == 'N' or ch == 'b' or ch == 'B':  # for knight and bishop
-                            if self.board[y + int(d[1] / 2)][x + int(d[0] / 2)] != '.':
+                        elif ch == 'n' or ch == 'N' or ch == 'b' or ch == 'B': # for knight and bishop
+                            if self.board[y+int(d[1]/2)][x+int(d[0]/2)] != '.':
                                 continue
                             elif ch == 'b' and y_ > 4:
                                 continue
                             elif ch == 'B' and y_ < 5:
                                 continue
-                        elif ch != 'p' and ch != 'P':  # for king and advisor
+                        elif ch != 'p' and ch != 'P': # for king and advisor
                             if x_ < 3 or x_ > 5:
                                 continue
                             if (ch == 'k' or ch == 'a') and y_ > 2:
@@ -122,7 +149,7 @@ class Chessboard:
                             if (ch == 'K' or ch == 'A') and y_ < 7:
                                 continue
                         _legal_moves.append(move_to_str(x, y, x_, y_))
-                        if (ch == 'k' and self.turn == RED):  # for King to King check
+                        if (ch == 'k' and self.turn == RED): #for King to King check
                             d, u = self._y_board_from(x, y)
                             if (u < self.height and self.board[u][x] == 'K'):
                                 _legal_moves.append(move_to_str(x, y, x, u))
@@ -130,18 +157,18 @@ class Chessboard:
                             d, u = self._y_board_from(x, y)
                             if (d > -1 and self.board[d][x] == 'k'):
                                 _legal_moves.append(move_to_str(x, y, x, d))
-                elif ch != '.':  # for connon and root
-                    l, r = self._x_board_from(x, y)
-                    d, u = self._y_board_from(x, y)
-                    for x_ in range(l + 1, x):
+                elif ch != '.': # for connon and root
+                    l,r = self._x_board_from(x,y)
+                    d,u = self._y_board_from(x,y)
+                    for x_ in range(l+1,x):
                         _legal_moves.append(move_to_str(x, y, x_, y))
-                    for x_ in range(x + 1, r):
+                    for x_ in range(x+1,r):
                         _legal_moves.append(move_to_str(x, y, x_, y))
-                    for y_ in range(d + 1, y):
+                    for y_ in range(d+1,y):
                         _legal_moves.append(move_to_str(x, y, x, y_))
-                    for y_ in range(y + 1, u):
+                    for y_ in range(y+1,u):
                         _legal_moves.append(move_to_str(x, y, x, y_))
-                    if ch == 'r' or ch == 'R':  # for root
+                    if ch == 'r' or ch == 'R': # for root
                         if self._can_move(l, y):
                             _legal_moves.append(move_to_str(x, y, l, y))
                         if self._can_move(r, y):
@@ -150,11 +177,11 @@ class Chessboard:
                             _legal_moves.append(move_to_str(x, y, x, d))
                         if self._can_move(x, u):
                             _legal_moves.append(move_to_str(x, y, x, u))
-                    else:  # for connon
-                        l_, _ = self._x_board_from(l, y)
-                        _, r_ = self._x_board_from(r, y)
-                        d_, _ = self._y_board_from(x, d)
-                        _, u_ = self._y_board_from(x, u)
+                    else: # for connon
+                        l_, _ = self._x_board_from(l,y)
+                        _, r_ = self._x_board_from(r,y)
+                        d_, _ = self._y_board_from(x,d)
+                        _, u_ = self._y_board_from(x,u)
                         if self._can_move(l_, y):
                             _legal_moves.append(move_to_str(x, y, l_, y))
                         if self._can_move(r_, y):
@@ -167,8 +194,8 @@ class Chessboard:
         self._legal_moves = _legal_moves
         return _legal_moves
 
-    def is_legal(self, mov: Move):
-        return mov.uci in self.legal_moves()
+    def is_legal(self, mov):
+        return mov.uci in self.legal_moves
 
     def is_end(self):
         red_k, black_k = [0, 0], [0, 0]
@@ -205,60 +232,49 @@ class Chessboard:
 
     def move_action_str(self, uci):
         mov = Move(uci)
-        if self.is_legal(mov):
-            self.push(mov)
-            return True
-        else:
-            return False
-
-    def _update(self):
-        # self._fen = None
-        self._legal_moves = None
-        self.steps += 1
-        if self.steps % 2 == 0:
-            self.turn = RED
-        else:
-            self.turn = BLACK
+        self.push(mov)
+        return True
 
     def push(self, mov):
         self.board[mov.n[1]][mov.n[0]] = self.board[mov.p[1]][mov.p[0]]
         self.board[mov.p[1]][mov.p[0]] = '.'
         self._update()
 
-    def _is_same_side(self, x, y):
+
+    def _is_same_side(self,x,y):
         if self.turn == RED and self.board[y][x].islower():
             return True
         if self.turn == BLACK and self.board[y][x].isupper():
             return True
 
-    def _can_move(self, x, y):  # basically check the move
-        if x < 0 or x > self.width - 1:
+    def _can_move(self,x,y): # basically check the move
+        if x < 0 or x > self.width-1:
             return False
-        if y < 0 or y > self.height - 1:
+        if y < 0 or y > self.height-1:
             return False
-        if self._is_same_side(x, y):
+        if self._is_same_side(x,y):
             return False
         return True
 
-    def _x_board_from(self, x, y):
-        l = x - 1
-        r = x + 1
+    def _x_board_from(self,x,y):
+        l = x-1
+        r = x+1
         while l > -1 and self.board[y][l] == '.':
-            l = l - 1
+            l = l-1
         while r < self.width and self.board[y][r] == '.':
-            r = r + 1
-        return l, r
+            r = r+1
+        return l,r
 
-    def _y_board_from(self, x, y):
-        d = y - 1
-        u = y + 1
+    def _y_board_from(self,x,y):
+        d = y-1
+        u = y+1
         while d > -1 and self.board[d][x] == '.':
-            d = d - 1
+            d = d-1
         while u < self.height and self.board[u][x] == '.':
-            u = u + 1
-        return d, u
+            u = u+1
+        return d,u
 
-    def result(self) -> str:
+    def result(self, claim_draw=True) -> str:
         rst = '*'
         if ('k' not in self.board[0]) and ('k' not in self.board[1]) and ('k' not in self.board[2]):
             rst = '0-1'
@@ -275,7 +291,7 @@ class Chessboard:
     def save_record(self, filename):
         return
 
-    def parse_wxf_move(self, wxf):
+    def parse_WXF_move(self, wxf):
         '''
         red is upper, black is lower alphabet
         '''
@@ -306,7 +322,7 @@ class Chessboard:
                     step = 2
                 else:
                     # for advisor
-                    step = 1
+                    step = 1 
                 if mov == '+' and p.islower() or mov == '-' and p.isupper():
                     dest_row = src_row + step
                 else:
@@ -358,27 +374,18 @@ class Chessboard:
                 if first_row != -1 and second_row != -1:
                     break
             if (piece.islower() and col == '+') or (piece.isupper() and col == '-'):
-                row = second_rowChessboard
+                row = second_row
             else:
                 row = first_row
         return row, column
 
-    def swapcase(self, a, replace=False):
+    def swapcase(self, a):
         if a.isalpha():
-            if replace:
-                a = replace_dict[a]
             return a.lower() if a.isupper() else a.upper()
         return a
 
-    @property
-    def is_red_turn(self):
-        return self.turn == RED
-
-    @property
-    def screen(self):
-        return self.board
 
 
-if __name__ == '__main__':
+if __name__ == '__main__': # test
     board = Chessboard()
-    print(board.FENboard())
+    print(board.legal_moves)

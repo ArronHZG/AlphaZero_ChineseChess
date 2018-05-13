@@ -1,27 +1,6 @@
 from enum import Enum, auto
 import numpy as np
 
-# from src.environment.heavy.chessman import Pawn, Cannon, Rook, Knight, Elephant, Mandarin, King
-# Chessman_2_idx = {
-#     Pawn: 0,
-#     Cannon: 1,
-#     Rook: 2,
-#     Knight: 3,
-#     Elephant: 4,
-#     Mandarin: 5,
-#     King: 6
-# }
-#
-# Idx_2_Chessman = {
-#     0: Pawn,
-#     1: Cannon,
-#     2: Rook,
-#     3: Knight,
-#     4: Elephant,
-#     5: Mandarin,
-#     6: King
-# }
-
 Fen_2_Idx = {
     'p': 0,
     'P': 0,
@@ -41,14 +20,14 @@ Fen_2_Idx = {
 
 
 class Color(Enum):
-    Black = auto()
-    Red = auto()
+    Black = auto
+    Red = auto
 
 
 class Winner(Enum):
-    red = auto()
-    black = auto()
-    draw = auto()
+    red = auto
+    black = auto
+    draw = auto
 
 
 def flip_move(x):
@@ -140,13 +119,9 @@ def create_action_labels():
 ActionLabelsRed = create_action_labels()
 ActionLabelsBlack = flip_action_labels(ActionLabelsRed)
 
-unflipped_index = [ActionLabelsRed.index(x) for x in ActionLabelsBlack]
+Unflipped_index = [ActionLabelsRed.index(x) for x in ActionLabelsBlack]
 
 
 def flip_policy(pol):
-    global unflipped_index
-    return np.asarray([pol[ind] for ind in unflipped_index])
-
-
-if __name__ == '__main__':
-    print(ActionLabelsRed.__len__())
+    global Unflipped_index
+    return np.asarray([pol[ind] for ind in Unflipped_index])

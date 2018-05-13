@@ -12,7 +12,7 @@ BOARD_HEIGHT = 10
 BOARD_WIDTH = 9
 
 
-def done(state, need_check=False):
+def done(state, turns=-1, need_check=False):
     if 's' not in state:
         return (True, 1, None)
     if 'S' not in state:
@@ -162,6 +162,43 @@ def state_to_planes(state):
     return planes
 
 
+def state_history_to_planes(state, history):
+    '''
+    e.g.
+        rkemsmekr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RKEMSMEKR
+        rkemsmek1/8r/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RKEMSMEKR
+    '''
+    planes = np.zeros(shape=(28, 10, 9), dtype=np.float32)
+    rows = state.split('/')
+    # 0 ~ 14 for current state
+    for i in range(len(rows)):
+        row = rows[i]
+        j = 0
+        for letter in row:
+            if letter.isalpha():
+                # 0 ~ 7 : upper, 7 ~ 14: lower
+                planes[Fen_2_Idx[letter] + int(letter.islower()) * 7][i][j] = 1
+                j += 1
+            else:
+                j += int(letter)
+    # 14 ~ 28 for last state
+    # history = [...,last state, red action, black state, black action, current state]
+    if history and len(history) >= 5:
+        last_state = history[-5]
+        rows = last_state.split('/')
+        for i in range(len(rows)):
+            row = rows[i]
+            j = 0
+            for letter in row:
+                if letter.isalpha():
+                    # 0 ~ 7 : upper, 7 ~ 14: lower
+                    planes[Fen_2_Idx[letter] + int(letter.islower()) * 7 + 14][i][j] = 1
+                    j += 1
+                else:
+                    j += int(letter)
+    return planes
+
+
 def board_to_state(board):
     c = 0
     fen = ''
@@ -183,6 +220,7 @@ def board_to_state(board):
 
 
 def state_to_fen(state, turns):
+    fen = ''
     state = "".join([state_to_board_dict[s] if s.isalpha() else s for s in state])
     fen = state + f' w - - 0 {turns}'
     if turns % 2 == 0:  # red turn
@@ -372,6 +410,63 @@ def to_uci_move(action):
     move = x0 + action[1] + x1 + action[3]
     return move
 
-if __name__ == '__main__':
-    print(state_to_board(INIT_STATE))
 
+def will_check_or_catch(state, action):
+    '''
+    判断走了下一步是否会造成红方将军或捉子
+    '''
+    state = step(state, action)  # 判断当前state的红方是否会被将/捉
+    board = state_to_board(state)
+    # 判断被将
+    red_k = [0, 0]
+    for i in range(BOARD_HEIGHT):
+        for j in range(BOARD_WIDTH):
+            if board[i][j] == 'k':
+                red_k[0] = i
+                red_k[1] = j
+    black_state = fliped_state(state)
+    black_moves = get_legal_moves(black_state)
+    # render(black_state)
+    red_k[0] = 9 - red_k[0]
+    red_k[1] = 8 - red_k[1]
+    for mov in black_moves:
+        dest = [int(mov[3]), int(mov[2])]
+        if dest == red_k:
+            check = True
+            logger.debug(f"Checking move {mov}")
+            return True
+    # 判断被捉
+    for mov in black_moves:
+        next_state, no_eat = new_step(black_state, mov)
+        if not no_eat:  # 有吃子
+            # 判断能不能吃回来(防御)
+            could_defend = False
+            next_moves = get_legal_moves(next_state)
+            fliped_move = flip_move(mov)
+            dest = fliped_move[2:]
+            for nmov in next_moves:
+                if nmov[2:] == dest:
+                    could_defend = True
+                    break
+            if not could_defend:
+                # 判断吃子源是否为未过河的兵
+                i = int(mov[3])
+                j = int(mov[2])
+                black_board = state_to_board(black_state)
+                if black_board[i][j] == 'p' and i <= 5:
+                    # 未过河的兵
+                    continue
+                logger.debug(f"Catch: mov = {mov}, chessman = {black_board[i][j]}")
+                return True
+    return False
+
+
+def has_attack_chessman(state):
+    '''
+    INIT_STATE = 'rkemsmekr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RKEMSMEKR'
+    '''
+    for chessman in state:
+        c = chessman.lower()
+        if c == 'r' or c == 'k' or c == 'p' or c == 'c':
+            return True
+    return False
