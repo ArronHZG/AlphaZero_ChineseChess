@@ -19,6 +19,7 @@ from src.utils.data_helper import get_game_data_filenames, write_game_data_to_fi
 from src.utils.model_helper import load_best_model_weight, save_as_best_model
 from src.utils.tf_helper import set_session_config
 
+
 logger = getLogger(__name__)
 
 def load_model(config):
