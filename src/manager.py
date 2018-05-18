@@ -60,7 +60,6 @@ def start():
     logger.info('Config type: %s' % (config_type))
     config.opts.piece_style = args.piece_style
     config.opts.bg_style = args.bg_style
-    config.internet.distributed = args.distributed
 
     # use multiple GPU
     gpus = config.opts.device_list.split(',')
