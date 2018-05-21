@@ -1,5 +1,5 @@
 import os
-import gc 
+import gc
 import numpy as np
 from concurrent.futures import ProcessPoolExecutor
 from datetime import datetime
@@ -26,11 +26,13 @@ job_done = Lock()
 thr_free = Lock()
 rst = None
 data = None
-futures =[]
+futures = []
+
 
 def start(config: Config):
     set_session_config(per_process_gpu_memory_fraction=1, allow_growth=True, device_list=config.opts.device_list)
     return SelfPlayWorker(config).start()
+
 
 class SelfPlayWorker:
     def __init__(self, config: Config):
@@ -73,23 +75,20 @@ class SelfPlayWorker:
                 turns = rst[0]
                 value = rst[1]
                 logger.debug(f"对局完成：对局ID {game_idx} 耗时{(end_time - start_time):.1f} 秒, "
-                         f"{turns / 2}回合, 胜者 = {value:.2f} (1 = 红, -1 = 黑, 0 = 和)")
+                             f"{turns / 2}回合, 胜者 = {value:.2f} (1 = 红, -1 = 黑, 0 = 和)")
                 self.buffer += data
 
                 if (game_idx % self.config.play_data.nb_game_in_file) == 0:
                     self.flush_buffer()
-                    self.remove_play_data(all=False) # remove old data
+                    self.remove_play_data(all=False)  # remove old data
                 ff = executor.submit(self_play_buffer, self.config, cur=self.cur_pipes)
                 ff.add_done_callback(recall_fn)
-                futures.append(ff) # Keep it going
+                futures.append(ff)  # Keep it going
                 thr_free.release()
-
-        if len(data) > 0:
-            self.flush_buffer()
 
     def load_model(self):
         model = CChessModel(self.config)
-        if self.config.internet.distributed or self.config.opts.new or not load_best_model_weight(model):
+        if self.config.opts.new or not load_best_model_weight(model):
             model.build()
             save_as_best_model(model)
         return model
@@ -106,7 +105,7 @@ class SelfPlayWorker:
             upload_worker.start()
         self.buffer = []
 
-    def remove_play_data(self,all=False):
+    def remove_play_data(self, all=False):
         files = get_game_data_filenames(self.config.resource)
         if (all):
             for path in files:
@@ -125,6 +124,7 @@ class SelfPlayWorker:
         else:
             logger.error(f'上传博弈数据 {filename} 失败. {response.msg if response is not None else None}')
 
+
 def recall_fn(future):
     global thr_free
     global job_done
@@ -137,15 +137,17 @@ def recall_fn(future):
     futures.remove(future)
     job_done.release()
 
+
 def self_play_buffer(config, cur) -> (tuple, list):
-    pipe = cur.pop() # borrow
+    pipe = cur.pop()  # borrow
 
     if random() > config.play.enable_resign_rate:
         enable_resign = True
     else:
         enable_resign = False
 
-    player = CChessPlayer(config, search_tree=defaultdict(VisitState), pipes=pipe, enable_resign=enable_resign, debugging=False)
+    player = CChessPlayer(config, search_tree=defaultdict(VisitState), pipes=pipe, enable_resign=enable_resign,
+                          debugging=False)
 
     state = senv.INIT_STATE
     history = [state]
@@ -165,7 +167,7 @@ def self_play_buffer(config, cur) -> (tuple, list):
             for i in range(len(history) - 1):
                 if history[i] == state:
                     # 如果走了下一步是将军或捉：禁止走那步
-                    if senv.will_check_or_catch(state, history[i+1]):
+                    if senv.will_check_or_catch(state, history[i + 1]):
                         no_act.append(history[i + 1])
                     # 否则当作闲着处理
                     else:
@@ -185,7 +187,8 @@ def self_play_buffer(config, cur) -> (tuple, list):
             print(f"{turns % 2} (0 = 红; 1 = 黑) 投降了!")
             value = -1
             break
-        print(f"博弈中: 回合{turns / 2 + 1} {'红方走棋' if turns % 2 == 0 else '黑方走棋'}, 着法: {action}, 用时: {(end_time - start_time):.1f}s")
+        print(
+            f"博弈中: 回合{turns / 2 + 1} {'红方走棋' if turns % 2 == 0 else '黑方走棋'}, 着法: {action}, 用时: {(end_time - start_time):.1f}s")
         # policys.append(policy)
         history.append(action)
         try:
@@ -228,7 +231,7 @@ def self_play_buffer(config, cur) -> (tuple, list):
 
     if turns % 2 == 1:  # balck turn
         value = -value
-    
+
     v = value
     data = [history[0]]
     for i in range(turns):
@@ -238,6 +241,7 @@ def self_play_buffer(config, cur) -> (tuple, list):
 
     cur.append(pipe)
     return (turns, v), data
+
 
 def build_policy(action, flip):
     labels_n = len(ActionLabelsRed)

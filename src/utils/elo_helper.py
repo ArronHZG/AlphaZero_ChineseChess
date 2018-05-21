@@ -3,9 +3,10 @@ from logging import getLogger
 logger = getLogger(__name__)
 
 # 0 ~ 999: K = 30; 1000 ~ 1999: K = 15; 2000 ~ 2999: K = 10; 3000 ~ : K = 5
-K_TABLE = [30, 15, 10, 5]   
+K_TABLE = [30, 15, 10, 5]
 
 R_PRI = 40
+
 
 def compute_elo(r0, r1, w):
     '''
@@ -23,3 +24,13 @@ def compute_elo(r0, r1, w):
     rn0 = rn0 if rn0 > 0 else 0
     rn1 = rn1 if rn1 > 0 else 0
     return (rn0, rn1)
+
+
+if __name__ == "__main__":
+    i = [0, 1, 1, 0, 1, 0, 1, 1, 0,0,0,1,0,0,1,1,0,0,0,1,1,0,0,1,0,0,0,0,0,0,0,0]
+    play1 = 2005
+    play2 = 2005
+    for j in i:
+        play1, play2 = compute_elo(play1, play2, j)
+        print(f"play1:{play1}")
+        print(f"play2:{play2}")

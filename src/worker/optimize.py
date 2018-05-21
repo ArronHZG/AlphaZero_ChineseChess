@@ -1,6 +1,5 @@
 import os
 import gc
-import subprocess
 import shutil
 import numpy as np
 
@@ -15,7 +14,7 @@ from src.config import Config
 from src.utils.data_helper import get_game_data_filenames, read_game_data_from_file
 from src.utils.model_helper import load_best_model_weight
 from src.utils.model_helper import need_to_reload_best_model_weight, save_as_next_generation_model, save_as_best_model
-from src.environment import ActionLabelsRed, flip_policy
+from src.environment.light.lookup_tables import ActionLabelsRed, flip_policy
 from src.utils.tf_helper import set_session_config
 from keras.optimizers import SGD
 from keras.callbacks import TensorBoard
@@ -24,12 +23,14 @@ import keras.backend as K
 
 logger = getLogger(__name__)
 
+
 def start(config: Config):
     set_session_config(per_process_gpu_memory_fraction=1, allow_growth=True, device_list=config.opts.device_list)
     return OptimizeWorker(config).start()
 
+
 class OptimizeWorker:
-    def __init__(self, config:Config):
+    def __init__(self, config: Config):
         self.config = config
         self.model = None
         self.loaded_filenames = set()
@@ -55,7 +56,8 @@ class OptimizeWorker:
             files = get_game_data_filenames(self.config.resource)
             offset = self.config.trainer.min_games_to_begin_learn
             if (len(files) < self.config.trainer.min_games_to_begin_learn \
-              or ((last_file is not None and last_file in files) and files.index(last_file) + 1 + offset > len(files))):
+                    or ((last_file is not None and last_file in files) and files.index(last_file) + 1 + offset > len(
+                        files))):
                 # if last_file is not None:
                 #     logger.info('Waiting for enough data 300s, ' + str((len(files) - files.index(last_file)) * self.config.play_data.nb_game_in_file) \
                 #             +' vs '+ str(self.config.trainer.min_games_to_begin_learn)+' games')
@@ -104,11 +106,11 @@ class OptimizeWorker:
         tensorboard_cb = TensorBoard(log_dir="./logs", batch_size=tc.batch_size, histogram_freq=1)
         if self.config.opts.use_multiple_gpus:
             self.mg_model.fit(state_ary, [policy_ary, value_ary],
-                                 batch_size=tc.batch_size,
-                                 epochs=epochs,
-                                 shuffle=True,
-                                 validation_split=0.02,
-                                 callbacks=[tensorboard_cb])
+                              batch_size=tc.batch_size,
+                              epochs=epochs,
+                              shuffle=True,
+                              validation_split=0.02,
+                              callbacks=[tensorboard_cb])
         else:
             self.model.model.fit(state_ary, [policy_ary, value_ary],
                                  batch_size=tc.batch_size,
@@ -149,7 +151,7 @@ class OptimizeWorker:
                 filename = self.filenames.pop()
                 # logger.debug("loading data from %s" % (filename))
                 futures.append(executor.submit(load_data_from_file, filename, self.config.opts.has_history))
-            while futures and len(self.dataset[0]) < self.config.trainer.dataset_size: #fill tuples
+            while futures and len(self.dataset[0]) < self.config.trainer.dataset_size:  # fill tuples
                 _tuple = futures.popleft().result()
                 if _tuple is not None:
                     for x, y in zip(self.dataset, _tuple):
@@ -183,11 +185,6 @@ class OptimizeWorker:
             save_as_best_model(self.model)
         else:
             save_as_next_generation_model(self.model)
-        if self.config.internet.distributed and send:
-            # send_worker = Thread(target=self.send_model, name="send_worker")
-            # send_worker.daemon = True
-            # send_worker.start()
-            self.send_model()
 
     def decide_learning_rate(self, total_steps):
         ret = None
@@ -205,38 +202,6 @@ class OptimizeWorker:
             return True
         return False
 
-    def send_model(self):
-        success = False
-        remote_server = 'root@111.231.100.42'
-        # for i in range(3):
-        #     remote_server = 'root@111.231.100.42'
-        #     remote_path = '/var/www/alphazero.52coding.com.cn/data/model/128x7/model_best_weight.h5'
-        #     cmd = f'scp {self.config.resource.next_generation_weight_path} {remote_server}:{remote_path}'
-        #     ret = subprocess.run(cmd, shell=True)
-        #     if ret.returncode == 0:
-        #         success = True
-        #         logger.info("Send best model success!")
-        #         break
-        #     else:
-        #         logger.error(f"Send best model failed! {ret.stderr}, cmd = {cmd}")
-        # if self.eva:
-        filename = self.model.digest + '.h5'
-        weight_path = os.path.join(self.config.resource.next_generation_model_dir, filename)
-        shutil.copy(self.config.resource.next_generation_weight_path, weight_path)
-        for i in range(3):
-            remote_path = '/var/www/alphazero.52coding.com.cn/data/model/next_generation'
-            cmd = f'scp {weight_path} {remote_server}:{remote_path}'
-            ret = subprocess.run(cmd, shell=True)
-            if ret.returncode == 0:
-                success = True
-                logger.info("Send evaluate model success!")
-                os.remove(weight_path)
-                break
-            else:
-                logger.error(f"Send evaluate model failed! {ret.stderr}, cmd = {cmd}")
-        data = {'digest': self.model.digest, 'elo': 0}
-        http_request(self.config.internet.add_model_url, post=True, data=data)
-
     def backup_play_data(self, files):
         backup_folder = os.path.join(self.config.resource.data_dir, 'trained');
         if not os.path.exists(backup_folder):
@@ -247,6 +212,7 @@ class OptimizeWorker:
             except Exception as e:
                 logger.error(f"Backup error : {e}")
         logger.info(f"backup {len(files)} files")
+
 
 def load_data_from_file(filename, use_history=False):
     try:
@@ -259,12 +225,10 @@ def load_data_from_file(filename, use_history=False):
         return None
     return expanding_data(data, use_history)
 
+
 def expanding_data(data, use_history=False):
     state = data[0]
     real_data = []
-    action = None
-    policy = None
-    value = None
     if use_history:
         history = [state]
     else:
@@ -282,11 +246,11 @@ def expanding_data(data, use_history=False):
         if use_history:
             history.append(action)
             history.append(state)
-        
+
     return convert_to_trainging_data(real_data, history)
 
 
-def convert_to_trainging_data(data):
+def convert_to_trainging_data(data, history):
     state_list = []
     policy_list = []
     value_list = []
@@ -308,6 +272,7 @@ def convert_to_trainging_data(data):
            np.asarray(policy_list, dtype=np.float32), \
            np.asarray(value_list, dtype=np.float32)
 
+
 def build_policy(action, flip):
     labels_n = len(ActionLabelsRed)
     move_lookup = {move: i for move, i in zip(ActionLabelsRed, range(labels_n))}
@@ -318,6 +283,3 @@ def build_policy(action, flip):
     if flip:
         policy = flip_policy(policy)
     return list(policy)
-
-
-

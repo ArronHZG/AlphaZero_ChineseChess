@@ -269,7 +269,6 @@ def self_play_buffer(config, pipes_bt, pipes_ng, idx, res_data) -> (tuple, list)
             state, no_eat = senv.new_step(state, action)
         except Exception as e:
             logger.error(f"{e}, no_act = {no_act}, policy = {policy}")
-            game_over = True
             value = 0
             break
         turns += 1
