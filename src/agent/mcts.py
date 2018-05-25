@@ -7,40 +7,42 @@ import concurrent.futures.thread
 import numpy as np
 import src.environment.light.static_env as senv
 from src.config import Config
-from src.environment.light.lookup_tables import  ActionLabelsRed, flip_move
+from src.environment.light.lookup_tables import ActionLabelsRed, flip_move
 from time import time, sleep
-import gc 
+import gc
 import sys
 
 logger = getLogger(__name__)
 
+
 class VisitState:
     def __init__(self):
-        self.a = defaultdict(ActionState)   # key: action, value: ActionState
-        self.sum_n = 0                      # visit count
-        self.visit = []                     # thread id that has visited this state
-        self.p = None                       # policy of this state
-        self.legal_moves = None             # all leagal moves of this state
-        self.waiting = False                # is waiting for NN's predict
+        self.a = defaultdict(ActionState)  # key: action, value: ActionState
+        self.sum_n = 0  # visit count
+        self.visit = []  # thread id that has visited this state
+        self.p = None  # policy of this state
+        self.legal_moves = None  # all leagal moves of this state
+        self.waiting = False  # is waiting for NN's predict
         self.w = 0
 
 
 class ActionState:
     def __init__(self):
-        self.n = 0      # N(s, a) : visit count
-        self.w = 0      # W(s, a) : total action value
-        self.q = 0      # Q(s, a) = N / W : action value
-        self.p = 0      # P(s, a) : prior probability
+        self.n = 0  # N(s, a) : visit count
+        self.w = 0  # W(s, a) : total action value
+        self.q = 0  # Q(s, a) = N / W : action value
+        self.p = 0  # P(s, a) : prior probability
+
 
 class CChessPlayer:
-    def __init__(self, config: Config, search_tree=None, pipes=None, play_config=None, 
-            enable_resign=False, debugging=False, uci=False, use_history=False):
+    def __init__(self, config: Config, search_tree=None, pipes=None, play_config=None,
+                 enable_resign=False, debugging=False, uci=False, use_history=False):
         self.config = config
         self.play_config = play_config or self.config.play
         self.labels_n = len(ActionLabelsRed)
         self.labels = ActionLabelsRed
         self.move_lookup = {move: i for move, i in zip(self.labels, range(self.labels_n))}
-        self.pipe = pipes                   # pipes that used to communicate with CChessModelAPI thread
+        self.pipe = pipes  # pipes that used to communicate with CChessModelAPI thread
         self.node_lock = defaultdict(Lock)  # key: state key, value: Lock of that state
         self.use_history = use_history
 
@@ -54,14 +56,14 @@ class CChessPlayer:
         self.enable_resign = enable_resign
         self.debugging = debugging
 
-        self.search_results = {}        # for debug
+        self.search_results = {}  # for debug
         self.debug = {}
 
         self.s_lock = Lock()
         self.run_lock = Lock()
-        self.q_lock = Lock()            # queue lock
+        self.q_lock = Lock()  # queue lock
         self.t_lock = Lock()
-        self.buffer_planes = []         # prediction queue
+        self.buffer_planes = []  # prediction queue
         self.buffer_history = []
 
         self.all_done = Lock()
@@ -107,7 +109,7 @@ class CChessPlayer:
         '''
         send planes to neural network for prediction
         '''
-        limit = 256                 # max prediction queue size
+        limit = 256  # max prediction queue size
         while not self.job_done:
             self.run_lock.acquire()
             with self.q_lock:
@@ -210,7 +212,7 @@ class CChessPlayer:
                     self.expand_and_evaluate(state, history)
                     break
 
-                if state in history[:-1]: # loop -> loss
+                if state in history[:-1]:  # loop -> loss
                     # logger.debug(f"loop -> loss, state = {state}, history = {history[:-1]}")
                     self.executor.submit(self.update_tree, None, 0, history)
                     break
@@ -227,14 +229,14 @@ class CChessPlayer:
                 virtual_loss = self.config.play.virtual_loss
                 self.tree[state].sum_n += 1
                 # logger.debug(f"node = {state}, sum_n = {node.sum_n}")
-                
+
                 action_state = self.tree[state].a[sel_action]
                 action_state.n += virtual_loss
                 action_state.w -= virtual_loss
                 action_state.q = action_state.w / action_state.n
 
                 # logger.debug(f"apply virtual_loss = {virtual_loss}, as.n = {action_state.n}, w = {action_state.w}, q = {action_state.q}")
-                
+
                 # if action_state.next is None:
                 history.append(sel_action)
                 state = senv.step(state, sel_action)
@@ -270,7 +272,7 @@ class CChessPlayer:
             node.p = None
 
         # sqrt of sum(N(s, b); for all b)
-        xx_ = np.sqrt(node.sum_n + 1)  
+        xx_ = np.sqrt(node.sum_n + 1)
 
         e = self.play_config.noise_eps
         c_puct = self.play_config.c_puct
@@ -319,8 +321,6 @@ class CChessPlayer:
 
     def update_tree(self, p, v, history):
         state = history.pop()
-        z = v
-
         if p is not None:
             with self.node_lock[state]:
                 # logger.debug(f"return from NN state = {state}, v = {v}")
@@ -361,7 +361,6 @@ class CChessPlayer:
         policy = np.zeros(self.labels_n)
         max_q_value = -100
         debug_result = {}
-
         for mov, action_state in node.a.items():
             policy[self.move_lookup[mov]] = action_state.n
             if no_act and mov in no_act:
@@ -421,15 +420,14 @@ class CChessPlayer:
         print(output)
         logger.debug(output)
         sys.stdout.flush()
-        
 
-    def apply_temperature(self, policy, turn) -> np.ndarray:
+    def apply_temperature(self, policy, turn):
         if turn < 30 and self.play_config.tau_decay_rate != 0:
-            tau = tau = np.power(self.play_config.tau_decay_rate, turn + 1)
+            tau = np.power(self.play_config.tau_decay_rate, turn + 1)
         else:
             tau = 0
         if tau < 0.1 or (turn >= 4 and self.config.opts.evaluate):
-             tau = 0
+            tau = 0
         if tau == 0:
             action = np.argmax(policy)
             ret = np.zeros(self.labels_n)
@@ -439,5 +437,3 @@ class CChessPlayer:
             ret = np.power(policy, 1 / tau)
             ret /= np.sum(ret)
             return ret
-
-

@@ -14,7 +14,7 @@ from src.agent.model import CChessModel
 from src.agent.mcts import CChessPlayer, VisitState
 from src.config import Config
 from src.environment.visual.env import CChessEnv
-from src.environment.light.lookup_tables import ActionLabelsRed, flip_move
+from src.environment.light.lookup_tables import flip_move
 from src.utils.model_helper import load_best_model_weight
 
 logger = getLogger(__name__)
@@ -100,10 +100,6 @@ class PlayWithHuman:
         pygame.init()
         screen, board_background, widget_background = self.init_screen()
         framerate = pygame.time.Clock()
-
-        labels = ActionLabelsRed
-        labels_n = len(ActionLabelsRed)
-
         current_chessman = None
         if human_first:
             self.env.board.calc_chessmans_moving_list()
@@ -131,7 +127,7 @@ class PlayWithHuman:
                             if index == 0 and pressed_array[index]:
                                 mouse_x, mouse_y = pygame.mouse.get_pos()
                                 col_num, row_num = self.translate_hit_area(mouse_x, mouse_y, self.chessman_w,
-                                                                      self.chessman_h)
+                                                                           self.chessman_h)
                                 chessman_sprite = self.select_sprite_from_group(
                                     self.chessmans, col_num, row_num)
                                 if current_chessman is None and chessman_sprite != None:
@@ -194,7 +190,7 @@ class PlayWithHuman:
             if ai_move_first == self.env.red_to_move:
                 self.ai.search_results = {}
                 state = self.env.get_state()
-                _, _, _, check = senv.done(state,need_check=True)
+                _, _, _, check = senv.done(state, need_check=True)
                 if not check and state in self.history[:-1]:
                     no_act = []
                     for i in range(len(self.history) - 1):
@@ -353,7 +349,7 @@ class PlayWithHuman:
                 return sprite
         return None
 
-    def translate_hit_area(self,screen_x, screen_y, w=80, h=80):
+    def translate_hit_area(self, screen_x, screen_y, w=80, h=80):
         return screen_x // w, 9 - screen_y // h
 
 
