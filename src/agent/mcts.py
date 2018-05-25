@@ -142,7 +142,7 @@ class CChessPlayer:
                 self.buffer_history = self.buffer_history[k:]
             self.run_lock.release()
 
-    def action(self, state, turns, no_act=None, depth=None, infinite=False) -> str:
+    def action(self, state, turns, no_act=None, depth=None, infinite=False):
         self.all_done.acquire(True)
         self.root_state = state
         self.no_act = no_act
@@ -191,7 +191,7 @@ class CChessPlayer:
         my_action = int(np.random.choice(range(self.labels_n), p=self.apply_temperature(policy, turns)))
         return self.labels[my_action], list(policy)
 
-    def MCTS_search(self, state, history=[], is_root_node=False) -> float:
+    def MCTS_search(self, state, history=list(), is_root_node=False):
         """
         Monte Carlo Tree Search
         """
@@ -247,7 +247,7 @@ class CChessPlayer:
             # state = action_state.next
             # history.append(state)
 
-    def select_action_q_and_u(self, state, is_root_node) -> str:
+    def select_action_q_and_u(self, state):
         '''
         Select an action with highest Q(s,a) + U(s,a)
         '''
@@ -354,7 +354,7 @@ class CChessPlayer:
             if self.num_task <= 0:
                 self.all_done.release()
 
-    def calc_policy(self, state, turns, no_act) -> np.ndarray:
+    def calc_policy(self, state, turns, no_act):
         '''
         calculate π(a|s0) according to the visit count
         '''
