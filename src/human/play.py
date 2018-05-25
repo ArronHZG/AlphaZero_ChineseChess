@@ -18,7 +18,6 @@ from src.environment.light.lookup_tables import flip_move
 from src.utils.model_helper import load_best_model_weight
 
 logger = getLogger(__name__)
-main_dir = os.path.split(os.path.abspath(__file__))[0]
 PIECE_STYLE = 'WOOD'
 
 
@@ -100,6 +99,7 @@ class PlayWithHuman:
         pygame.init()
         screen, board_background, widget_background = self.init_screen()
         framerate = pygame.time.Clock()
+
         current_chessman = None
         if human_first:
             self.env.board.calc_chessmans_moving_list()
@@ -190,13 +190,25 @@ class PlayWithHuman:
             if ai_move_first == self.env.red_to_move:
                 self.ai.search_results = {}
                 state = self.env.get_state()
+                logger.info(f"state = {state}")
                 _, _, _, check = senv.done(state, need_check=True)
                 if not check and state in self.history[:-1]:
                     no_act = []
+                    free_move = defaultdict(int)
                     for i in range(len(self.history) - 1):
                         if self.history[i] == state:
-                            no_act.append(self.history[i + 1])
-                    if no_act != []:
+                            # 如果走了下一步是将军或捉：禁止走那步
+                            if senv.will_check_or_catch(state, self.history[i + 1]):
+                                no_act.append(self.history[i + 1])
+                            # 否则当作闲着处理
+                            else:
+                                free_move[state] += 1
+                                if free_move[state] >= 2:
+                                    # 作和棋处理
+                                    self.env.winner = Winner.draw
+                                    self.env.board.winner = Winner.draw
+                                    break
+                    if no_act:
                         logger.debug(f"no_act = {no_act}")
                 action, policy = self.ai.action(state, self.env.num_halfmoves, no_act)
                 if action is None:
